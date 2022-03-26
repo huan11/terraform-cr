@@ -1,0 +1,40 @@
+apiVersion: tf.isaaguilar.com/v1alpha1
+kind: Terraform
+metadata:
+  name: azure-demo
+spec:
+  terraformVersion: 1.0.0
+  terraformRunnerPullPolicy: IfNotPresent
+  # Pull this module to execute
+  terraformModule: https://github.com/huan11/tf-repo.git//azure-tf?ref=main
+
+  # Use kubernetes as a backend which is available for terraform >= v0.13
+  customBackend: |-
+    terraform {
+      backend "kubernetes" {
+        secret_suffix    = "simple-template-example"
+        in_cluster_config  = true
+      }
+    }
+  ignoreDelete: false
+  writeOutputsToStatus: true
+  keepCompletedPods: true
+
+  # Create a tfvar env for the terraform to use
+  env:
+  - name: TF_VAR_name
+    value: azure-demo
+  - name: TF_VAR_resource_group_name
+    value: azuredemorg
+  - name: TF_VAR_resource_location
+    value: westeurope
+  - name: TF_VAR_subscription_id
+    value: 
+  - name: TF_VAR_client_id
+    value: 
+  - name: TF_VAR_client_secret
+    value: 
+  - name: TF_VAR_tenant_id
+    value: 
+  
+  scmAuthMethods: [] # No keys are required to download or use this tf module
